@@ -19,30 +19,30 @@ To actively participate in the workshop, you will need to install `R` and `RStud
 
 To install `R`, go to `https://cloud.r-project.org/`. You want to install `R` using the precompiled binary distribution for your operating system. Select your operating system using on of these links:
 
-<img src="https://github.com/jfjelstul/IHEID-intro-to-R-workshop/blob/master/installation/install-R-1.png?raw=true" width="80%">
+<img src="https://github.com/jfjelstul/IHEID-R-workshop/blob/master/installation/install-R-1.png?raw=true" width="80%">
 
 If you use macOS, click on this link to install the latest version of `R`:
 
-<img src="https://github.com/jfjelstul/IHEID-intro-to-R-workshop/blob/master/installation/install-R-2.png?raw=true" width="80%">
+<img src="https://github.com/jfjelstul/IHEID-R-workshop/blob/master/installation/install-R-2.png?raw=true" width="80%">
 
 If you use Windows, and you haven't installed `R` before, click on this link:
 
-<img src="https://github.com/jfjelstul/IHEID-intro-to-R-workshop/blob/master/installation/install-R-3.png?raw=true" width="80%">
+<img src="https://github.com/jfjelstul/IHEID-R-workshop/blob/master/installation/install-R-3.png?raw=true" width="80%">
 
 Then, click this link to install the latest version of `R`:
 
-<img src="https://github.com/jfjelstul/IHEID-intro-to-R-workshop/blob/master/installation/install-R-4.png?raw=true" width="80%">
+<img src="https://github.com/jfjelstul/IHEID-R-workshop/blob/master/installation/install-R-4.png?raw=true" width="80%">
 
 ### Installing RStudio
 
 To install `RStudio` from `https://www.rstudio.com/products/rstudio/download/`. You want to download the free version of RStudio Desktop. Click on this link:
 
-<img src="https://github.com/jfjelstul/IHEID-intro-to-R-workshop/blob/master/installation/install-RStudio-2.png?raw=true" width="80%">
+<img src="https://github.com/jfjelstul/IHEID-R-workshop/blob/master/installation/install-RStudio-1.png?raw=true" width="80%">
 
-This will scroll you down to a button that will let you download the current version of RStudio for your operating system from this list:
+This will scroll you down to a button that will let you download the current version of RStudio for your operating system:
 
-<img src="https://github.com/jfjelstul/IHEID-intro-to-R-workshop/blob/master/installation/install-R-2.png?raw=true" width="80%">
+<img src="https://github.com/jfjelstul/IHEID-R-workshop/blob/master/installation/install-RStudio-2.png?raw=true" width="80%">
 
-You can also choose the appropriate installer for your operating system:
+You can also choose the appropriate installer for your operating system from this list:
 
-<img src="https://github.com/jfjelstul/IHEID-intro-to-R-workshop/blob/master/installation/install-R-3.png?raw=true" width="80%">
+<img src="https://github.com/jfjelstul/IHEID-R-workshop/blob/master/installation/install-RStudio-3.png?raw=true" width="80%">
