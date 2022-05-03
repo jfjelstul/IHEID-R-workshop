@@ -1,0 +1,10 @@
+name,score_winter,score_spring,winter_grade_factor,spring_grade_factor,sex_vector_factor
+Steve,3,4,D,C,M
+Carol,4,3,C,D,F
+Sam,4,5,C,B,M
+Maddie,4,5,C,B,F
+Aaron,5,3,B,C,M
+Erin,5,3,B,C,F
+Ian,5,5,B,B,M
+Kyle,5,6,B,A,M
+Lucy,6,5,A,B,F
