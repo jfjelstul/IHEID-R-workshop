@@ -78,7 +78,6 @@ x <- median(
 )
 
 # Option 4: use a pipe
-# Pipes take the output of the previous step and insert it into the next step. They turn f(g(x)) into f
 # This way, you can think linearly
 x <- random_numbers |>
   round() |>
