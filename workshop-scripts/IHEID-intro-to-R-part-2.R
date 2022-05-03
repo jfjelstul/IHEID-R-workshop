@@ -54,6 +54,7 @@ decisions <- euip::decisions
 # This makes your code a lot easier to read
 
 # Let's make a short vector of random numbers between 0 and 10
+set.seed(12345)
 random_numbers <- runif(n = 10, min = 1, max = 10)
 
 # Suppose we want to find the median integer. There are 4 basic ways of doing
@@ -109,6 +110,10 @@ decisions <- decisions |>
 # Example 4: sort data by member state, then date (descending order)
 decisions <- decisions |>
   arrange(member_state_id, desc(decision_date))
+
+# Example 5: sort by key_id
+decisions <- decisions |>
+  arrange(key_id)
 
 # Filtering data ---------------------------------------------------------------
 
@@ -247,8 +252,8 @@ example$stage_short[example$decision_stage == "Referral to the Court (Article 25
 example$stage_short[example$decision_stage == "Letter of formal notice (Article 260)"] <- "LFN 260"
 example$stage_short[example$decision_stage == "Reasoned opinion (Article 260)"] <- "RO 260"
 example$stage_short[example$decision_stage == "Referral to the Court (Article 260)"] <- "RF 260"
-example$stage_short[example$decision_stage == "Closing"] <- "closing"
-example$stage_short[example$decision_stage == "Withdrawal"] <- "withdrawal"
+example$stage_short[example$decision_stage == "Closing"] <- "C"
+example$stage_short[example$decision_stage == "Withdrawal"] <- "W"
 table(example$stage_short)
 
 # We also can use `mutate()` in combination with `case_when()`
@@ -357,7 +362,7 @@ example <- decisions |>
   mutate(
     case_year = decision_id |>
       str_extract("[0-9]{4}") |>
-      as.numeric()
+      as.numeric(),
     case_number = decision_id |>
       str_extract("[0-9]{4}:[0-9]{4}") |>
       str_extract("[0-9]{4}$") |>
@@ -373,6 +378,12 @@ head(example$case_number)
 # element in the vector corresponds to one match. This list can be stored as a
 # column in a tibble. Generally, you want to avoid lists in tibble columns, but
 # this is one example where it's useful
+example <- decisions |>
+  mutate(
+    numbers = decision_date |>
+      str_extract_all("[0-9]+")
+  )
+head(example$numbers)
 
 # Example 8: detecting text
 # `str_detect()` detects whether there is at least one match
@@ -515,9 +526,6 @@ levels(example$category)
 example$category <- fct_reorder(example$category, example$order)
 levels(example$category)
 
-# Clean environment
-rm(x, counts)
-
 # Here's an example in a pipe
 example <- decisions |>
   mutate(
@@ -578,6 +586,9 @@ example <- decisions |>
 table(example$decision_label)
 levels(example$decision_label)
 
+# Clean environment
+rm(x)
+
 # Working with dates -----------------------------------------------------------
 
 # The `lubridate` package has a lot of great features. Here, we'll just focus on
@@ -636,7 +647,7 @@ example
 
 # We can group the data by year and member state to create panel data
 
-# Reasoned opinions per member state per year
+# Example 1: reasoned opinions per member state per year
 example <- decisions |>
   filter(stage_lfn_258 == 1) |>
   group_by(decision_year, member_state) |>
@@ -644,13 +655,13 @@ example <- decisions |>
     count = n()
   )
 
-# Another way to do it
+# Example 2: reasoned opinions per member state per year
 example <- decisions |>
   filter(stage_lfn_258 == 1) |>
   group_by(decision_year, member_state) |>
   count()
 
-# List of case IDs for referrals by member state and year
+# Example 3: list of case IDs for referrals by member state and year
 example <- decisions |>
   filter(stage_rf_258 == 1) |>
   group_by(decision_year, member_state) |>
@@ -658,7 +669,7 @@ example <- decisions |>
     case_ids = str_c(case_id, collapse = ", ")
   )
 
-# List of all decisions in each case
+# Example 4: list of all decisions in each case
 example <- decisions |>
   filter(stage_additional == 0) |>
   arrange(decision_date) |>
@@ -666,6 +677,17 @@ example <- decisions |>
   summarize(
     history = str_c(decision_stage, collapse = ", ")
   )
+
+# Example 5: grouping using `mutate()` instead of `summarize()`
+# When you use `mutate()` remember to also use `ungroup()`
+example <- decisions |>
+  group_by(case_id) |>
+  mutate(
+    group_id = cur_group_id(), # a unique ID number for each group
+    within_group_id = 1:n() # a counter within each group
+  ) |>
+  ungroup() |>
+  arrange(group_id, within_group_id)
 
 # Putting it all together ------------------------------------------------------
 
