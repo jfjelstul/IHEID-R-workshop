@@ -1,5 +1,4 @@
-# SOCIAL SCIENCE METHODS FOR LAWYERS
-# The Graduate Institute, Geneva, May the 4th...
+# Social Science Methods for International Lawyers
 # Module 3: Intro to R 
 # Unit 3: Visualizations 
 # Umut Yüksel
@@ -12,15 +11,14 @@
 # In this unit, we will show you how to use ggplot2 to visualize your data.  
 # We will continue to rely the EU Infringements Procedure (EUIP) Database.
 
-# We begin by introducing ggplot2. We then move onto visualizing  
-
 #### ggplot2 #### 
 
 # ggplot2 is part of "tidyverse", which you can install and load: 
-install.packages("tidyverse")
-library(tidyverse)
+# install.packages("tidyverse")
+# library(tidyverse)
+# Since we already have it loaded from the previous script, we can skip this. 
 
-# Or you can just install and load ggplot2:
+# You can also just install and load ggplot2:
 # install.packages("ggplot2")
 # library(ggplot2)
 
@@ -45,7 +43,7 @@ ggplot(df, aes(x = a, y = b)) # this creates the coordinate system
 ggplot(df, aes(x = a, y = b)) + 
   geom_point() # this specifies how the data should be represented, note the + 
 
-ggplot(df, aes(x = a, y = b, color = c)) + # we add color to it
+ggplot(df, aes(x = a, y = b, color = c)) + # we add color to, defined by values of c 
   geom_point() 
 
 # We can then modify our plot by adding new arguments and layers to this representation: 
@@ -135,8 +133,13 @@ p <- ggplot(df, aes(x = a, y = b, color = c)) +
   theme_minimal(base_size = 15) + 
   theme(legend.position = "bottom") 
 
+p
+
 p + theme(axis.ticks = element_blank()) + # remove the ticks
   theme(axis.text = element_blank()) # remove the text on the axes 
+
+# This is to show the basic architecture. 
+# Now we will introduce you to some simple graphs that you can begin using. 
 
 #### Bar graph ####
 
@@ -151,7 +154,9 @@ decisions <- euip::decisions
 # Let's begin with a bar graph, visualizing the letters of formal notice (LFNs) 
 # received by member state in 2018. 
 
-# The first step is to create a dataframe that is ready to be plotted. 
+# You can go about this in two ways: 
+
+# 1. You can first create a dataframe that is ready to be plotted. 
 # We take the decisions that are at the LFN stage in 2018:
 lfn_2018 <- decisions |>
   filter(stage_lfn_258 == 1, decision_year == 2018) |>
@@ -164,8 +169,21 @@ lfn_2018
 ggplot(lfn_2018, aes(x = member_state, y = count)) + 
   geom_bar(stat = "identity")
 
+# 2. You can simply pipe the ggplot specifications without creating a new object:
+
+decisions |>
+  filter(stage_lfn_258 == 1, decision_year == 2018) |>
+  group_by(member_state) |>
+  summarize(count = n()) |>
+  ggplot(aes(x = member_state, y = count)) + 
+  geom_bar(stat = "identity")
+
+# Can you see the difference between the two? 
+
 # The plot shows the states on the x-axis, and the number LFNs received in 2018. 
-# As you can see, it is not terrible--we can barely read the names of the states.
+# As you can see, it can be improved:
+# - it is too crowded (we can barely read the names of the states),
+# - there are not enough labels to tell us what we are looking at. 
 
 # Now let us customize it a little, adding a title and axis labels, increasing size,
 # and rotating the text on the x-axis so that we can read the names of the states:
@@ -177,13 +195,15 @@ ggplot(lfn_2018, aes(x = member_state, y = count)) +
        y = "Number of decisions") + 
   theme_bw(base_size = 15) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 # "angle" does the rotation and "hjust = 1" simply nudges the text down to avoid overlap. 
 
 # Now it would be good to arrange countries on the x-axis by the number of decisions. 
-# For this, we have to rearrange the member_state variable, like so: 
+# For this, we can rearrange the member_state variable, like so: 
 
 lfn_2018_ordered <- lfn_2018 |> 
-  mutate(member_state = fct_reorder(member_state, count)) 
+  mutate(member_state = fct_reorder(member_state, count, 
+                                    .desc = FALSE)) # this is FALSE by default, so the order will be ASCENDING
 
 # Simply swap the data frames to see what this does: 
 ggplot(lfn_2018_ordered, aes(x = member_state, y = count)) +
@@ -194,9 +214,22 @@ ggplot(lfn_2018_ordered, aes(x = member_state, y = count)) +
   theme_bw(base_size = 15) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+# An alternative method uses the fct_reorder() function directly within ggplot:
+ggplot(lfn_2018_ordered, aes(x = fct_reorder(member_state, count, 
+                                             .desc = TRUE), # TRUE will put it in DESCENDING order
+                             y = count)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Letters for formal notice (2018)", 
+       x = "Member state", 
+       y = "Number of decisions") + 
+  theme_bw(base_size = 15) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 # Much better. Let's add a final piece of information to the graph so that 
 # we see which countries receive more letters than average and which fewer:
-ggplot(lfn_2018_ordered, aes(x = member_state, y = count)) +
+ggplot(lfn_2018_ordered, aes(x = fct_reorder(member_state, count, 
+                                             .desc = TRUE), 
+                             y = count)) +
   geom_bar(stat = "identity") +
   geom_hline(aes(yintercept = mean(count)), linetype = "dashed", size = 0.5) + 
   labs(title = "Letters for formal notice (2018)", 
@@ -206,7 +239,9 @@ ggplot(lfn_2018_ordered, aes(x = member_state, y = count)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 
 # Let's do a few final adjustments: 
-ggplot(lfn_2018_ordered, aes(x = member_state, y = count)) +
+ggplot(lfn_2018_ordered, aes(x = fct_reorder(member_state, count, 
+                                             .desc = TRUE), 
+                             y = count)) +
   geom_bar(stat = "identity", size = 0.5, color = "black", fill = "gray90", width = 0.75) +
   geom_hline(aes(yintercept = mean(count)), linetype = "dashed", size = 0.5) + 
   scale_y_continuous(breaks = seq(0, 40, 5)) +
@@ -226,12 +261,24 @@ final_bar_graph <- ggplot(lfn_2018_ordered, aes(x = member_state, y = count)) +
   theme_bw(base_size = 15) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 
-ggsave(final_bar_graph, filename = "~/Desktop/bar-graph.pdf", device = "pdf", width = 10, height = 7, scale = 1.25)
+ggsave(final_bar_graph, 
+       filename = "~/Desktop/bar-graph.pdf", 
+       device = "pdf", 
+       width = 30, 
+       height = 20, 
+       units = "cm")
+
+# If you do put in an object, it will save the most recent visualization: 
+ggsave(filename = "~/Desktop/bar-graph-alt.pdf", 
+       device = "pdf", 
+       width = 30, 
+       height = 20, 
+       units = "cm")
 
 #### Line graph #### 
 
-# Let's check another type of graph that shows evolution over time. 
-# Instead of getting counts per unit, we can get counts per year to show how
+# Let's check another type of graph that is good for showing evolution over time. 
+# Instead of getting counts per unit (=country), we can get counts PER YEAR to show how
 # applications, decisions, violations, etc. evolve over time. 
 
 # Let's have a look at the decisions between the years of 2004 and 2018. 
@@ -269,7 +316,7 @@ ggplot(lfn_258_2004_to_2018, aes(x = decision_year, y = count)) +
   geom_point() +
   geom_line() + 
   geom_vline(xintercept = 2009, linetype = "dashed", size = 0.5) +
-  annotate(geom = "text", x = 2009-0.33, y = 1600, 
+  annotate(geom = "text", x = 2009-0.33, y = 1600, # you may have to experiment here
            label = "Lisbon Treaty", 
            color = "black",
            angle = 90, 
@@ -298,7 +345,9 @@ three_stages <- decisions |>
   mutate(decision_stage = factor(decision_stage))
 
 # Now let's plot: 
-ggplot(three_stages, aes(x = decision_year, y = count, color = decision_stage)) +
+ggplot(three_stages, aes(x = decision_year, 
+                         y = count, 
+                         color = decision_stage)) +
   geom_point() +
   geom_line() +
   labs(title = "Article 258 decisions by year",
@@ -368,7 +417,7 @@ ggplot(three_stages, aes(x = decision_year, y = count, fill = decision_stage)) +
   theme_bw(base_size = 15) + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 
-# A final option we will introduce is the geom_wrap().
+# As a final tweak, we will introduce is the geom_wrap().
 # This allows you to create panels per the grouping variables: 
 
 ggplot(three_stages, aes(x = decision_year, y = count, fill = decision_stage)) +
@@ -387,15 +436,15 @@ ggplot(three_stages, aes(x = decision_year, y = count, fill = decision_stage)) +
 # Note that for all these to work properly, you need to have your grouping variable  
 # saved as a factor with all the levels properly identified and labeled. 
 
-#### Endless, the possibilities are... #### 
+#### Endless possibilities #### 
 
 # There is much more you can do with ggplot2 (and other packages). 
 # We have some examples for you on our GitHub page. 
 
-# See also hundreds of guides online: 
-# -  https://r-graph-gallery.com (a great variety of charts with reproducible code)
+# There are several guides online: 
+# - https://r-graph-gallery.com (a great variety of charts with reproducible code)
 
-# Don't be shy to Google whenever you have a visualization idea in mind. 
-# You can bet that someone has already implemented using ggplot2 or R. 
+# Don't hesitate to Google whenever you have a visualization idea in mind. 
+# You can bet that someone has already implemented it using ggplot2 or R. 
 
-# The end. 
+# The end
